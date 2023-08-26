@@ -39,20 +39,19 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    username = serializers.CharField(source='user.username')
 
     class Meta:
         model = UserProfile
-        fields = ['id', 'name', 'bio', 'user']
+        fields = ['id', 'name', 'bio', 'username']
 
     def update(self, instance, validated_data):
         user = instance.user
-
         username = validated_data['user']['username']
         profile_name = validated_data['name']
         profile_bio = validated_data['bio']
 
-        if user.username != username:
+        if user.username != username and username:
             user.username = username
             user.save()
 
@@ -62,5 +61,3 @@ class UserProfileSerializer(serializers.ModelSerializer):
             instance.bio = profile_bio
 
         return instance
-
-
